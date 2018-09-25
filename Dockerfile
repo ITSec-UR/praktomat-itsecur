@@ -1,7 +1,7 @@
 FROM ubuntu:xenial
 
 
-MAINTAINER Christoph Schreyer <christoph.schreyer@stud.uni-regensburg.de>
+LABEL maintainer="Christoph Schreyer <christoph.schreyer@stud.uni-regensburg.de>"
 
 # Environment Variables
 ENV DB_NAME praktomat_default
