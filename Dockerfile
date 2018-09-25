@@ -70,10 +70,10 @@ RUN chmod -R 0775 Praktomat/ \
  
  
 # Adjust settings for new Praktomat instance
-RUN sed -i 's/praktomat_default/${DB_NAME}/g' /var/www/Praktomat/src/settings/local.py \
- && sed -i 's/praktomat.itsec.ur.de/${HOST_NAME}/g' /var/www/Praktomat/src/settings/local.py \
- && sed -i 's/Praktomat Lehrstuhl Kesdogan/Praktomat Lehrstuhl Kesdogan ${PRAKTOMAT_NAME}/g' /var/www/Praktomat/src/settings/local.py \
- && sed -i 's/praktomat.itsec.ur.de/${HOST_NAME}/g' /etc/apache2/sites-available/praktomat.conf
+RUN sed -i "s/praktomat_default/${DB_NAME}/g" /var/www/Praktomat/src/settings/local.py \
+ && sed -i "s/praktomat.itsec.ur.de/${HOST_NAME}/g" /var/www/Praktomat/src/settings/local.py \
+ && sed -i "s/Praktomat Lehrstuhl Kesdogan/Praktomat Lehrstuhl Kesdogan ${PRAKTOMAT_NAME}/g" /var/www/Praktomat/src/settings/local.py \
+ && sed -i "s/praktomat.itsec.ur.de/${HOST_NAME}/g" /etc/apache2/sites-available/praktomat.conf
 
 RUN cat /var/www/Praktomat/src/settings/local.py
  
