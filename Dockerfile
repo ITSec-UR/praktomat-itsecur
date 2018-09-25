@@ -60,28 +60,30 @@ RUN chmod 755 /srv/praktomat/mailsign/createkey.py \
  && chmod 755 Praktomat/docker-image/Dockerfile \
  && chmod 755 /usr/local/bin/safe-docker
  
-
-# Adjust settings for new Praktomat instance
-RUN sed -i 's/praktomat_default/${DB_NAME}/g' /var/www/Praktomat/src/settings/local.py
-RUN sed -i 's/praktomat.itsec.ur.de/${HOST_NAME}/g' /var/www/Praktomat/src/settings/local.py
-RUN sed -i 's/Praktomat Lehrstuhl Kesdogan/Praktomat Lehrstuhl Kesdogan ${PRAKTOMAT_NAME}/g' /var/www/Praktomat/src/settings/local.py
-RUN sed -i 's/praktomat.itsec.ur.de/${HOST_NAME}/g' /etc/apache2/sites-available/praktomat.conf
-
-# RUN sed -i 's/{% load motd %}//g' /var/www/Praktomat/src/templates/registration/login.html \
-# && sed -i 's/{% motd %}//g' /var/www/Praktomat/src/templates/registration/login.html
-
-
-# Migrate changes
-RUN ./Praktomat/src/manage-devel.py migrate --noinput
-RUN ./Praktomat/src/manage-local.py collectstatic --noinput -link
-
-
+ 
 # Set permissions for Praktomat directory
 RUN adduser --disabled-password --gecos '' praktomat
 RUN chmod -R 0775 Praktomat/ \
  && chown -R praktomat Praktomat/ \
  && chgrp -R praktomat Praktomat/ \
  && adduser www-data praktomat
+ 
+ 
+# Adjust settings for new Praktomat instance
+RUN sed -i 's/praktomat_default/${DB_NAME}/g' /var/www/Praktomat/src/settings/local.py \
+ && sed -i 's/praktomat.itsec.ur.de/${HOST_NAME}/g' /var/www/Praktomat/src/settings/local.py \
+ && sed -i 's/Praktomat Lehrstuhl Kesdogan/Praktomat Lehrstuhl Kesdogan ${PRAKTOMAT_NAME}/g' /var/www/Praktomat/src/settings/local.py \
+ && sed -i 's/praktomat.itsec.ur.de/${HOST_NAME}/g' /etc/apache2/sites-available/praktomat.conf
+
+RUN cat /var/www/Praktomat/src/settings/local.py
+ 
+# RUN sed -i 's/{% load motd %}//g' /var/www/Praktomat/src/templates/registration/login.html \
+# && sed -i 's/{% motd %}//g' /var/www/Praktomat/src/templates/registration/login.html
+
+ 
+ # Migrate changes
+RUN ./Praktomat/src/manage-devel.py migrate --noinput
+RUN ./Praktomat/src/manage-local.py collectstatic --noinput -link
  
  
  # Configure apache
