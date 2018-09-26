@@ -4,9 +4,9 @@ FROM ubuntu:xenial
 LABEL maintainer="Christoph Schreyer <christoph.schreyer@stud.uni-regensburg.de>"
 
 # Environment Variables
-ENV DB_NAME praktomat_default
-ENV HOST_NAME praktomat
-ENV PRAKTOMAT_NAME OOP 
+# ENV DB_NAME praktomat_default
+# ENV HOST_NAME praktomat
+# ENV PRAKTOMAT_NAME OOP 
 
 # Install required packages
 RUN apt-get update \
@@ -49,7 +49,7 @@ RUN git clone --recursive git://github.com/ITSec-UR/Praktomat.git \
 RUN mkdir -p /var/www/Praktomat/PraktomatSupport /var/www/Praktomat/data /srv/praktomat/mailsign
 
 
-# Add custom config files from praktomat repository
+# Add custom files from praktomat repository
 COPY createkey.py /srv/praktomat/mailsign/createkey.py
 COPY safe-Dockerfile Praktomat/docker-image/Dockerfile
 COPY safe-docker /usr/local/bin/safe-docker
@@ -74,8 +74,6 @@ RUN sed -i "s/praktomat_default/${DB_NAME}/g" /var/www/Praktomat/src/settings/lo
  && sed -i "s/praktomat.itsec.ur.de/${HOST_NAME}/g" /var/www/Praktomat/src/settings/local.py \
  && sed -i "s/Praktomat Lehrstuhl Kesdogan/Praktomat Lehrstuhl Kesdogan ${PRAKTOMAT_NAME}/g" /var/www/Praktomat/src/settings/local.py \
  && sed -i "s/praktomat.itsec.ur.de/${HOST_NAME}/g" /etc/apache2/sites-available/praktomat.conf
-
-RUN cat /var/www/Praktomat/src/settings/local.py
  
 # RUN sed -i 's/{% load motd %}//g' /var/www/Praktomat/src/templates/registration/login.html \
 # && sed -i 's/{% motd %}//g' /var/www/Praktomat/src/templates/registration/login.html
@@ -110,4 +108,4 @@ RUN apt-get --trivial-only install sudo
 RUN echo 'Defaults        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"\n\nroot    ALL=(ALL:ALL) ALL\n\n%sudo   ALL=(ALL:ALL) ALL\n\n%praktomat ALL=NOPASSWD:ALL\npraktomat ALL=NOPASSWD:ALL\nwww-data ALL=NOPASSWD:ALL\ndeveloper ALL=NOPASSWD:ALL\npraktomat ALL= NOPASSWD: /usr/local/bin/safe-docker' >> /etc/sudoers \
  && echo 'www-data ALL=(TESTER)NOPASSWD:ALL\npraktomat ALL=(TESTER)NOPASSWD:ALL, NOPASSWD:/usr/local/bin/safe-docker' >> /etc/sudoers.d/praktomat_tester
 
-EXPOSE 25 9002
+EXPOSE 25 9003
