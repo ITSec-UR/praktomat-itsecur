@@ -61,15 +61,17 @@ RUN chmod 755 /srv/praktomat/mailsign/createkey.py \
  && chmod 755 Praktomat/docker-image/Dockerfile \
  && chmod 755 /usr/local/bin/safe-docker
  
- 
-# Set permissions for Praktomat directory
+
+# Add praktomat user
 RUN adduser --disabled-password --gecos '' praktomat
-RUN chmod -R 0775 Praktomat/ \
- && chown -R praktomat Praktomat/ \
- && chgrp -R praktomat Praktomat/ \
- && adduser www-data praktomat
- 
- 
+
+
+# Add mailsign
+WORKDIR /srv/praktomat/mailsign/
+RUN python createkey.py
+RUN apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+
+
 # Adjust settings for new Praktomat instance
 RUN sed -i "s/praktomat_default/${DB_NAME}/g" /var/www/Praktomat/src/settings/local.py \
  && sed -i "s/praktomat.itsec.ur.de/${HOST_NAME}/g" /var/www/Praktomat/src/settings/local.py \
@@ -80,23 +82,25 @@ RUN sed -i "s/praktomat_default/${DB_NAME}/g" /var/www/Praktomat/src/settings/lo
 # && sed -i 's/{% motd %}//g' /var/www/Praktomat/src/templates/registration/login.html
 
  
- # Migrate changes
+# Migrate changes
 RUN ./Praktomat/src/manage-devel.py migrate --noinput
 RUN ./Praktomat/src/manage-local.py collectstatic --noinput -link
  
+
+# Set permissions for Praktomat directory
+RUN chmod -R 0775 Praktomat/ \
+ && chown -R praktomat Praktomat/ \
+ && chgrp -R praktomat Praktomat/ \
+ && adduser www-data praktomat
  
- # Configure apache
+ 
+# Configure apache
 RUN service apache2 start \ 
  && a2enmod wsgi \
  && a2enmod rewrite \
  && a2ensite praktomat.conf \
  && service apache2 restart 
  
-
-# Add mailsign
-WORKDIR /srv/praktomat/mailsign/
-RUN python createkey.py
-RUN apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
 
 # Docker setup (inactive)
 WORKDIR /var/www/Praktomat/
@@ -109,4 +113,4 @@ RUN apt-get --trivial-only install sudo
 RUN echo 'Defaults        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"\n\nroot    ALL=(ALL:ALL) ALL\n\n%sudo   ALL=(ALL:ALL) ALL\n\n%praktomat ALL=NOPASSWD:ALL\npraktomat ALL=NOPASSWD:ALL\nwww-data ALL=NOPASSWD:ALL\ndeveloper ALL=NOPASSWD:ALL\npraktomat ALL= NOPASSWD: /usr/local/bin/safe-docker' >> /etc/sudoers \
  && echo 'www-data ALL=(TESTER)NOPASSWD:ALL\npraktomat ALL=(TESTER)NOPASSWD:ALL, NOPASSWD:/usr/local/bin/safe-docker' >> /etc/sudoers.d/praktomat_tester
 
-EXPOSE 25 9003
+EXPOSE 25 9002
