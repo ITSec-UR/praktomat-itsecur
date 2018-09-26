@@ -4,9 +4,9 @@ FROM ubuntu:xenial
 LABEL maintainer="Christoph Schreyer <christoph.schreyer@stud.uni-regensburg.de>"
 
 # Environment Variables
-# ENV DB_NAME praktomat_default
-# ENV HOST_NAME praktomat
-# ENV PRAKTOMAT_NAME OOP 
+ENV DB_NAME praktomat_default
+ENV HOST_NAME praktomat
+ENV PRAKTOMAT_NAME OOP 
 
 # Install required packages
 RUN apt-get update \
