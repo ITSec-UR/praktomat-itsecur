@@ -6,7 +6,7 @@ LABEL maintainer="Christoph Schreyer <christoph.schreyer@stud.uni-regensburg.de>
 # Build arguments
 ARG DB_NAME=praktomat_2
 ARG HOST_NAME=praktomat.itsec.ur.de
-ARG PRAKTOMAT_NAME=ADP
+ARG PRAKTOMAT_NAME=OOP
 
 
 # Install required packages
@@ -47,7 +47,7 @@ RUN git clone --recursive git://github.com/ITSec-UR/Praktomat.git \
 
  
 # Create directories
-RUN mkdir -p /var/www/Praktomat/PraktomatSupport /var/www/Praktomat/data /srv/praktomat/mailsign
+RUN mkdir -p /var/www/Praktomat/PraktomatSupport /var/www/Praktomat/data /srv/praktomat/mailsign /srv/praktomat/contrib
 
 
 # Add custom files from praktomat repository
@@ -62,14 +62,18 @@ RUN chmod 755 /srv/praktomat/mailsign/createkey.py \
  && chmod 755 /usr/local/bin/safe-docker
  
 
-# Add praktomat user
-RUN adduser --disabled-password --gecos '' praktomat
+# Add users praktomat and tester
+RUN adduser --disabled-password --gecos '' praktomat \
+ && adduser --disabled-password --gecos '' tester
 
 
 # Add mailsign
-WORKDIR /srv/praktomat/mailsign/
-RUN python createkey.py
+RUN python /srv/praktomat/mailsign/createkey.py
 RUN apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+
+
+# Get JPlag 2.11.8
+RUN wget -O /srv/praktomat/contrib/jplag.jar https://github.com/jplag/jplag/releases/download/v2.11.8-SNAPSHOT/jplag-2.11.8-SNAPSHOT-jar-with-dependencies.jar
 
 
 # Adjust settings for new Praktomat instance
@@ -83,15 +87,16 @@ RUN sed -i "s/praktomat_default/${DB_NAME}/g" /var/www/Praktomat/src/settings/lo
 
  
 # Migrate changes
-RUN ./Praktomat/src/manage-devel.py migrate --noinput
-RUN ./Praktomat/src/manage-local.py collectstatic --noinput -link
+RUN /var/www/Praktomat/src/manage-devel.py migrate --noinput
+RUN /var/www/Praktomat/src/manage-local.py collectstatic --noinput -link
  
 
 # Set permissions for Praktomat directory
 RUN chmod -R 0775 Praktomat/ \
  && chown -R praktomat Praktomat/ \
  && chgrp -R praktomat Praktomat/ \
- && adduser www-data praktomat
+ && adduser www-data praktomat \
+ && adduser tester praktomat
  
  
 # Configure apache
@@ -103,14 +108,14 @@ RUN service apache2 start \
  
 
 # Docker setup (inactive)
-WORKDIR /var/www/Praktomat/
-RUN echo 'deb http://apt.dockerproject.org/repo ubuntu-xenial main' >> /etc/apt/sources.list.d/docker.list
-RUN apt-get update \
- && apt-get -y install linux-image-extra-4.4.0-128-generic
-RUN apt-get -y install docker-engine
-RUN service docker start
-RUN apt-get --trivial-only install sudo
-RUN echo 'Defaults        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"\n\nroot    ALL=(ALL:ALL) ALL\n\n%sudo   ALL=(ALL:ALL) ALL\n\n%praktomat ALL=NOPASSWD:ALL\npraktomat ALL=NOPASSWD:ALL\nwww-data ALL=NOPASSWD:ALL\ndeveloper ALL=NOPASSWD:ALL\npraktomat ALL= NOPASSWD: /usr/local/bin/safe-docker' >> /etc/sudoers \
- && echo 'www-data ALL=(TESTER)NOPASSWD:ALL\npraktomat ALL=(TESTER)NOPASSWD:ALL, NOPASSWD:/usr/local/bin/safe-docker' >> /etc/sudoers.d/praktomat_tester
+# WORKDIR /var/www/Praktomat/
+# RUN echo 'deb http://apt.dockerproject.org/repo ubuntu-xenial main' >> /etc/apt/sources.list.d/docker.list
+# RUN apt-get update \
+#  && apt-get -y install linux-image-extra-4.4.0-128-generic
+# RUN apt-get -y install docker-engine
+# RUN service docker start
+# RUN apt-get --trivial-only install sudo
+# RUN echo 'Defaults        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"\n\nroot    ALL=(ALL:ALL) ALL\n\n%sudo   ALL=(ALL:ALL) ALL\n\n%praktomat ALL=NOPASSWD:ALL\npraktomat ALL=NOPASSWD:ALL\nwww-data ALL=NOPASSWD:ALL\ndeveloper ALL=NOPASSWD:ALL\npraktomat ALL= NOPASSWD: /usr/local/bin/safe-docker' >> /etc/sudoers \
+#  && echo 'www-data ALL=(TESTER)NOPASSWD:ALL\npraktomat ALL=(TESTER)NOPASSWD:ALL, NOPASSWD:/usr/local/bin/safe-docker' >> /etc/sudoers.d/praktomat_tester
 
-EXPOSE 25 9002
+EXPOSE 25 9000
