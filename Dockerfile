@@ -28,7 +28,9 @@ RUN apt-get update \
  gcj-jdk \
  git-core \
  mutt \
- vim
+ nano \
+ wget 
+RUN apt-get --trivial-only install sudo
 RUN apt-get -y install \
  python2.7-dev \
  python-setuptools \
@@ -65,7 +67,6 @@ RUN chmod 755 /srv/praktomat/mailsign/createkey.py \
 # Add users praktomat and tester
 RUN adduser --disabled-password --gecos '' praktomat \
  && adduser --disabled-password --gecos '' tester
-RUN apt-get --trivial-only install sudo
 RUN echo 'Defaults        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"\n\nroot    ALL=(ALL:ALL) ALL\n\n%sudo   ALL=(ALL:ALL) ALL\n\n%praktomat ALL=NOPASSWD:ALL\npraktomat ALL=NOPASSWD:ALL\nwww-data ALL=NOPASSWD:ALL\ndeveloper ALL=NOPASSWD:ALL\npraktomat ALL= NOPASSWD: /usr/local/bin/safe-docker' >> /etc/sudoers \
  && echo 'www-data ALL=(TESTER)NOPASSWD:ALL\npraktomat ALL=(TESTER)NOPASSWD:ALL, NOPASSWD:/usr/local/bin/safe-docker' >> /etc/sudoers.d/praktomat_tester
 
