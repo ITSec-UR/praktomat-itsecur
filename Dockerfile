@@ -80,6 +80,14 @@ RUN apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 581
 RUN wget -O /srv/praktomat/contrib/jplag.jar https://github.com/jplag/jplag/releases/download/v2.11.8-SNAPSHOT/jplag-2.11.8-SNAPSHOT-jar-with-dependencies.jar
 
 
+# Set permissions for Praktomat directory
+RUN chmod -R 0775 Praktomat/ \
+ && chown -R praktomat Praktomat/ \
+ && chgrp -R praktomat Praktomat/ \
+ && adduser www-data praktomat \
+ && adduser tester praktomat
+ 
+
 # Adjust settings for new Praktomat instance
 RUN sed -i "s/praktomat_default/${DB_NAME}/g" /var/www/Praktomat/src/settings/local.py \
  && sed -i "s/praktomat.itsec.ur.de/${HOST_NAME}/g" /var/www/Praktomat/src/settings/local.py \
@@ -93,15 +101,7 @@ RUN sed -i "s/praktomat_default/${DB_NAME}/g" /var/www/Praktomat/src/settings/lo
 # Migrate changes
 RUN /var/www/Praktomat/src/manage-devel.py migrate --noinput
 RUN /var/www/Praktomat/src/manage-local.py collectstatic --noinput -link
- 
 
-# Set permissions for Praktomat directory
-RUN chmod -R 0775 Praktomat/ \
- && chown -R praktomat Praktomat/ \
- && chgrp -R praktomat Praktomat/ \
- && adduser www-data praktomat \
- && adduser tester praktomat
- 
  
 # Configure apache
 RUN service apache2 start \ 
