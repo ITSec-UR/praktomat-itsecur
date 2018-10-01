@@ -40,13 +40,13 @@ RUN apt-get -y install \
 RUN pip install --upgrade pip
  
  
-# Download & Install Praktomat
+# Download & Install praktomat
 WORKDIR /var/www/
 RUN git clone --recursive git://github.com/ITSec-UR/Praktomat.git \
  && pip install -r Praktomat/requirements.txt
 
  
-# Create directories
+# Create praktomat directories
 RUN mkdir -p /var/www/Praktomat/PraktomatSupport /var/www/Praktomat/data /srv/praktomat/mailsign /srv/praktomat/contrib
 
 
@@ -65,6 +65,9 @@ RUN chmod 755 /srv/praktomat/mailsign/createkey.py \
 # Add users praktomat and tester
 RUN adduser --disabled-password --gecos '' praktomat \
  && adduser --disabled-password --gecos '' tester
+RUN apt-get --trivial-only install sudo
+RUN echo 'Defaults        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"\n\nroot    ALL=(ALL:ALL) ALL\n\n%sudo   ALL=(ALL:ALL) ALL\n\n%praktomat ALL=NOPASSWD:ALL\npraktomat ALL=NOPASSWD:ALL\nwww-data ALL=NOPASSWD:ALL\ndeveloper ALL=NOPASSWD:ALL\npraktomat ALL= NOPASSWD: /usr/local/bin/safe-docker' >> /etc/sudoers \
+ && echo 'www-data ALL=(TESTER)NOPASSWD:ALL\npraktomat ALL=(TESTER)NOPASSWD:ALL, NOPASSWD:/usr/local/bin/safe-docker' >> /etc/sudoers.d/praktomat_tester
 
 
 # Add mailsign
@@ -114,8 +117,5 @@ RUN service apache2 start \
 #  && apt-get -y install linux-image-extra-4.4.0-128-generic
 # RUN apt-get -y install docker-engine
 # RUN service docker start
-# RUN apt-get --trivial-only install sudo
-# RUN echo 'Defaults        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"\n\nroot    ALL=(ALL:ALL) ALL\n\n%sudo   ALL=(ALL:ALL) ALL\n\n%praktomat ALL=NOPASSWD:ALL\npraktomat ALL=NOPASSWD:ALL\nwww-data ALL=NOPASSWD:ALL\ndeveloper ALL=NOPASSWD:ALL\npraktomat ALL= NOPASSWD: /usr/local/bin/safe-docker' >> /etc/sudoers \
-#  && echo 'www-data ALL=(TESTER)NOPASSWD:ALL\npraktomat ALL=(TESTER)NOPASSWD:ALL, NOPASSWD:/usr/local/bin/safe-docker' >> /etc/sudoers.d/praktomat_tester
 
 EXPOSE 25 9000
