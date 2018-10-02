@@ -3,6 +3,7 @@ FROM ubuntu:xenial
 
 LABEL maintainer="Christoph Schreyer <christoph.schreyer@stud.uni-regensburg.de>"
 
+
 # Build arguments
 ARG DB_NAME=praktomat_2
 ARG HOST_NAME=praktomat.itsec.ur.de
@@ -37,10 +38,9 @@ RUN apt-get -y install \
  python-m2crypto \
  python-pip \
  && rm -rf /var/lib/apt/lists/*
-
 RUN pip install --upgrade pip
  
- 
+
 # Download & Install praktomat
 WORKDIR /var/www/
 RUN git clone --recursive git://github.com/ITSec-UR/Praktomat.git \
@@ -80,9 +80,8 @@ RUN wget -O /srv/praktomat/contrib/jplag.jar https://github.com/jplag/jplag/rele
 
 
 # Set permissions for Praktomat directory
-RUN chmod -R 0775 Praktomat/ \
- && chown -R praktomat Praktomat/ \
- && chgrp -R praktomat Praktomat/ \
+RUN chmod -R 0775 Praktomat \
+ && chown -R praktomat:praktomat Praktomat \
  && adduser www-data praktomat \
  && adduser tester praktomat
  
@@ -96,12 +95,17 @@ RUN sed -i "s/praktomat_default/${DB_NAME}/g" /var/www/Praktomat/src/settings/lo
 # && sed -i 's/{% motd %}//g' /var/www/Praktomat/src/templates/registration/login.html
 
  
-# Migrate changes
+# Migrate database changes
 RUN /var/www/Praktomat/src/manage-devel.py migrate --noinput
 RUN /var/www/Praktomat/src/manage-local.py collectstatic --noinput -link
+RUN chown -R praktomat:praktomat Praktomat/static
 
  
-# Configure apache
+# Change secret permissions
+RUN chown praktomat:praktomat Praktomat/PraktomatSupport/SECRET_KEY
+
+
+# Configure apache webserver
 RUN service apache2 start \ 
  && a2enmod wsgi \
  && a2enmod rewrite \
