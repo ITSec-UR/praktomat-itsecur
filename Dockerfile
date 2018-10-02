@@ -57,7 +57,6 @@ COPY safe-Dockerfile Praktomat/docker-image/Dockerfile
 COPY safe-docker /usr/local/bin/safe-docker
 COPY ports.conf /etc/apache2/ports.conf
 COPY praktomat.conf /etc/apache2/sites-available/praktomat.conf
- 
 RUN chmod 755 /srv/praktomat/mailsign/createkey.py \
  && chmod 755 Praktomat/docker-image/Dockerfile \
  && chmod 755 /usr/local/bin/safe-docker
@@ -70,7 +69,7 @@ RUN echo 'Defaults        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:
  && echo 'www-data ALL=(TESTER)NOPASSWD:ALL\npraktomat ALL=(TESTER)NOPASSWD:ALL, NOPASSWD:/usr/local/bin/safe-docker' >> /etc/sudoers.d/praktomat_tester
 
 
-# Add mailsign
+# Add mailsign key
 RUN python /srv/praktomat/mailsign/createkey.py
 RUN apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
 
@@ -90,19 +89,12 @@ RUN chmod -R 0775 Praktomat \
 RUN sed -i "s/praktomat_default/${DB_NAME}/g" /var/www/Praktomat/src/settings/local.py \
  && sed -i "s/praktomat.itsec.ur.de/${HOST_NAME}/g" /var/www/Praktomat/src/settings/local.py \
  && sed -i "s/praktomat.itsec.ur.de/${HOST_NAME}/g" /etc/apache2/sites-available/praktomat.conf
- 
-# RUN sed -i 's/{% load motd %}//g' /var/www/Praktomat/src/templates/registration/login.html \
-# && sed -i 's/{% motd %}//g' /var/www/Praktomat/src/templates/registration/login.html
 
  
 # Migrate database changes
 RUN /var/www/Praktomat/src/manage-devel.py migrate --noinput
 RUN /var/www/Praktomat/src/manage-local.py collectstatic --noinput -link
 RUN chown -R praktomat:praktomat Praktomat/static
-
- 
-# Change secret permissions
-RUN chown praktomat:praktomat Praktomat/PraktomatSupport/SECRET_KEY
 
 
 # Configure apache webserver
@@ -114,7 +106,6 @@ RUN service apache2 start \
  
 
 # Docker setup (inactive)
-# WORKDIR /var/www/Praktomat/
 # RUN echo 'deb http://apt.dockerproject.org/repo ubuntu-xenial main' >> /etc/apt/sources.list.d/docker.list
 # RUN apt-get update \
 #  && apt-get -y install linux-image-extra-4.4.0-128-generic
