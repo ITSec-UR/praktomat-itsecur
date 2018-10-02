@@ -5,7 +5,6 @@ LABEL maintainer="Christoph Schreyer <christoph.schreyer@stud.uni-regensburg.de>
 
 
 # Build arguments
-ARG DB_NAME=praktomat_2
 ARG HOST_NAME=praktomat.itsec.ur.de
 
 
@@ -85,8 +84,7 @@ RUN chmod -R 0775 Praktomat \
  
 
 # Adjust settings for new Praktomat instance
-RUN sed -i "s/praktomat_default/${DB_NAME}/g" /var/www/Praktomat/src/settings/local.py \
- && sed -i "s/praktomat.itsec.ur.de/${HOST_NAME}/g" /var/www/Praktomat/src/settings/local.py \
+RUN sed -i "s/praktomat.itsec.ur.de/${HOST_NAME}/g" /var/www/Praktomat/src/settings/local.py \
  && sed -i "s/praktomat.itsec.ur.de/${HOST_NAME}/g" /etc/apache2/sites-available/praktomat.conf
 
  
