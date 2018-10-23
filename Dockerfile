@@ -56,6 +56,7 @@ COPY safe-Dockerfile Praktomat/docker-image/Dockerfile
 COPY safe-docker /usr/local/bin/safe-docker
 COPY ports.conf /etc/apache2/ports.conf
 COPY praktomat.conf /etc/apache2/sites-available/praktomat.conf
+COPY mpm_event.conf /etc/apache2/mods-available/mpm_event.conf
 RUN chmod 755 /srv/praktomat/mailsign/createkey.py \
  && chmod 755 Praktomat/docker-image/Dockerfile \
  && chmod 755 /usr/local/bin/safe-docker
@@ -69,6 +70,7 @@ RUN echo 'Defaults        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:
 
 # Add mailsign key
 RUN python /srv/praktomat/mailsign/createkey.py
+RUN mv signer_key.pem /srv/praktomat/mailsign/signer_key.pem
 
 
 # Get JPlag 2.11.8
@@ -98,15 +100,11 @@ RUN service apache2 start \
  && a2enmod wsgi \
  && a2enmod rewrite \
  && a2ensite praktomat.conf \
- && service apache2 restart 
+ && service apache2 restart
  
 
-# Docker setup (inactive)
-# RUN apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-# RUN echo 'deb http://apt.dockerproject.org/repo ubuntu-xenial main' >> /etc/apt/sources.list.d/docker.list
-# RUN apt-get update \
-#  && apt-get -y install linux-image-extra-4.4.0-128-generic
-# RUN apt-get -y install docker-engine
-# RUN service docker start
+# Performance tweaks
+RUN echo DefaultTasksMax=1000 >> /etc/systemd/system.conf
+ 
 
 EXPOSE 25 9000
