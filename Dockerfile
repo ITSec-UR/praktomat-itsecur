@@ -70,7 +70,8 @@ RUN echo 'Defaults        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:
 
 # Add mailsign key
 RUN python /srv/praktomat/mailsign/createkey.py
-RUN mv signer_key.pem /srv/praktomat/mailsign/signer_key.pem
+RUN mv signer_key.pem /srv/praktomat/mailsign/signer_key.pem \
+ && mv signer_key_pub.pem /srv/praktomat/mailsign/signer_key_pub.pem
 
 
 # Get JPlag 2.11.8
