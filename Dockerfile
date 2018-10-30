@@ -5,7 +5,7 @@ LABEL maintainer="Christoph Schreyer <christoph.schreyer@stud.uni-regensburg.de>
 
 
 # Build arguments
-ARG HOST_NAME=praktomat.itsec.ur.de
+ARG HOST_NAME=nasadmin.itsec.ur.de
 
 
 # Install required packages
@@ -108,4 +108,4 @@ RUN service apache2 start \
 RUN echo DefaultTasksMax=1000 >> /etc/systemd/system.conf
  
 
-EXPOSE 25 9000
+EXPOSE 25 9001
