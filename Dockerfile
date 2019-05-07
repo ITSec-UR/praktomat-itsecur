@@ -74,9 +74,9 @@ RUN mv signer_key.pem /srv/praktomat/mailsign/signer_key.pem \
  && mv signer_key_pub.pem /srv/praktomat/mailsign/signer_key_pub.pem
 
 
-# Get JPlag 2.11.8
-RUN wget -O /srv/praktomat/contrib/jplag.jar https://github.com/jplag/jplag/releases/download/v2.11.8-SNAPSHOT/jplag-2.11.8-SNAPSHOT-jar-with-dependencies.jar
-
+# Get JPlag 2.11.8 and checkstyle 8.20
+RUN wget -O /srv/praktomat/contrib/jplag.jar https://github.com/jplag/jplag/releases/download/v2.11.8-SNAPSHOT/jplag-2.11.8-SNAPSHOT-jar-with-dependencies.jar \
+ && wget -O /srv/praktomat/contrib/checkstyle.jar https://github.com/checkstyle/checkstyle/releases/download/checkstyle-8.20/checkstyle-8.20-all.jar
 
 # Set permissions for Praktomat directory
 RUN chmod -R 0775 Praktomat \
