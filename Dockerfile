@@ -102,7 +102,15 @@ RUN service apache2 start \
  && a2enmod rewrite \
  && a2ensite praktomat.conf \
  && service apache2 restart
- 
+
+
+# Fix locale
+RUN echo "export LANG='de_DE.UTF-8'\nexport LC_ALL='de_DE.UTF-8'" >> /etc/apache2/envvars \
+ && echo "LC_ALL=de_DE.UTF-8" >> /etc/environment \
+ && echo "de_DE.UTF-8" >> /etc/locale.gen \
+ && echo "LANG=de_DE.UTF-8" >> /etc/locale.conf \
+ && locale-gen de_DE.UTF-8
+
 
 # Performance tweaks
 RUN echo DefaultTasksMax=1000 >> /etc/systemd/system.conf
