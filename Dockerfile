@@ -5,7 +5,7 @@ LABEL maintainer="Christoph Schreyer <christoph.schreyer@stud.uni-regensburg.de>
 
 
 # Add artful repo for GCJ
-RUN echo "deb http://archive.ubuntu.com/ubuntu/ artful universe" >> /etc/apt/sources.list.d/artful.list
+RUN echo "deb http://archive.ubuntu.com/ubuntu/ xenial universe" >> /etc/apt/sources.list.d/xenial.list
 
 
 # Install required packages
