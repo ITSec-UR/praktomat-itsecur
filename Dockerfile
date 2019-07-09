@@ -4,6 +4,10 @@ FROM ubuntu:bionic
 LABEL maintainer="Christoph Schreyer <christoph.schreyer@stud.uni-regensburg.de>"
 
 
+# Add artful repo for GCJ
+RUN echo "deb http://archive.ubuntu.com/ubuntu/ artful universe" >> /etc/apt/sources.list.d/artful.list
+
+
 # Install required packages
 RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get -y install \
