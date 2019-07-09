@@ -4,10 +4,6 @@ FROM ubuntu:bionic
 LABEL maintainer="Christoph Schreyer <christoph.schreyer@stud.uni-regensburg.de>"
 
 
-# Add artful repo for GCJ
-RUN echo "deb http://archive.ubuntu.com/ubuntu/ xenial universe" >> /etc/apt/sources.list.d/xenial.list
-
-
 # Install required packages
 RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get -y install \
@@ -24,7 +20,7 @@ RUN apt-get update \
  junit \
  junit4 \
  dejagnu \
- gcj-jdk \
+# gcj-jdk \
  git-core \
  mutt \
  nano \
