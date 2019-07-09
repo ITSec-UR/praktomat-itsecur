@@ -1,11 +1,7 @@
-FROM ubuntu:xenial
+FROM ubuntu:bionic
 
 
 LABEL maintainer="Christoph Schreyer <christoph.schreyer@stud.uni-regensburg.de>"
-
-
-# Build arguments
-ARG HOST_NAME=nasadmin.itsec.ur.de
 
 
 # Install required packages
@@ -20,7 +16,7 @@ RUN apt-get update \
  swig \
  libapache2-mod-xsendfile \
  libapache2-mod-wsgi \
- openjdk-8-jdk \
+ openjdk-11-jdk \
  junit \
  junit4 \
  dejagnu \
@@ -86,8 +82,8 @@ RUN chmod -R 0775 Praktomat \
  
 
 # Adjust settings for new Praktomat instance
-RUN sed -i "s/praktomat.itsec.ur.de/${HOST_NAME}/g" /var/www/Praktomat/src/settings/local.py \
- && sed -i "s/praktomat.itsec.ur.de/${HOST_NAME}/g" /etc/apache2/sites-available/praktomat.conf
+# RUN sed -i "s/praktomat.itsec.ur.de/${HOST_NAME}/g" /var/www/Praktomat/src/settings/local.py \
+# && sed -i "s/praktomat.itsec.ur.de/${HOST_NAME}/g" /etc/apache2/sites-available/praktomat.conf
 
  
 # Migrate database changes
