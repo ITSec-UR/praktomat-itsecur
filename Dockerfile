@@ -4,11 +4,11 @@ FROM ubuntu:bionic
 LABEL maintainer="Christoph Schreyer <christoph.schreyer@stud.uni-regensburg.de>"
 
 
-ENV PG_DB
-ENV PG_USER
-ENV PG_PW
-ENV PG_HOST
-ENV PG_PORT
+ENV PG_DB DB
+ENV PG_USER USER
+ENV PG_PW PW
+ENV PG_HOST HOST
+ENV PG_PORT PORT
 
 
 # Install required packages
