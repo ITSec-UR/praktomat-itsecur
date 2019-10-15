@@ -20,10 +20,9 @@ RUN apt-get update \
  junit \
  junit4 \
  dejagnu \
-# gcj-jdk \
  git-core \
  mutt \
- nano \
+ vim \
  wget 
 RUN apt-get --trivial-only install sudo
 RUN apt-get -y install \
