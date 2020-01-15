@@ -69,9 +69,15 @@ RUN mv signer_key.pem /srv/praktomat/mailsign/signer_key.pem \
  && mv signer_key_pub.pem /srv/praktomat/mailsign/signer_key_pub.pem
 
 
-# Get JPlag 2.11.8 and checkstyle 8.20
-RUN wget -O /srv/praktomat/contrib/jplag.jar https://github.com/jplag/jplag/releases/download/v2.11.8-SNAPSHOT/jplag-2.11.8-SNAPSHOT-jar-with-dependencies.jar \
- && wget -O /srv/praktomat/contrib/checkstyle.jar https://github.com/checkstyle/checkstyle/releases/download/checkstyle-8.20/checkstyle-8.20-all.jar
+# Get JPlag 2.12.1, checkstyle 8.20 and Java 13
+RUN wget -O /srv/praktomat/contrib/jplag.jar https://github.com/jplag/jplag/releases/download/v2.12.1-SNAPSHOT/jplag-2.12.1-SNAPSHOT-jar-with-dependencies.jar \
+ && wget -O /srv/praktomat/contrib/checkstyle.jar https://github.com/checkstyle/checkstyle/releases/download/checkstyle-8.20/checkstyle-8.20-all.jar \
+ && wget -O /usr/lib/jvm/jdk-13.tar.gz https://download.java.net/java/GA/jdk13/5b8a42f3905b406298b72d750b6919f6/33/GPL/openjdk-13_linux-x64_bin.tar.gz \
+ && tar -xvf /usr/lib/jvm/jdk-13.tar.gz -C /usr/lib/jvm/ \
+ && mv /usr/lib/jvm/jdk-13 /usr/lib/jvm/java-13-openjdk-amd64 \
+ && rm -rf /usr/lib/jvm/jdk-13.tar.gz \
+ && rm -rf /etc/alternatives/java \
+ && ln -s /usr/lib/jvm/java-13-openjdk-amd64/bin/java /etc/alternatives/java
 
 # Set permissions for Praktomat directory
 RUN chmod -R 0775 Praktomat \
